@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConstructFlow AI - Main Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            font-size: 24px;
+        }
+        
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 300;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .notification-icon {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 70px;
+            width: 250px;
+            height: calc(100vh - 70px);
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            padding: 20px 0;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: #ecf0f1;
+            border-left-color: #3498db;
+        }
+        
+        .nav-item i {
+            width: 20px;
+            margin-right: 12px;
+            color: #7f8c8d;
+        }
+        
+        .nav-item.active i {
+            color: #3498db;
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+            min-height: calc(100vh - 70px);
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .dashboard-title {
+            color: #2c3e50;
+            font-size: 28px;
+            font-weight: 300;
+        }
+        
+        .quick-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .action-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .action-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+        
+        .action-btn.secondary {
+            background: #27ae60;
+        }
+        
+        .action-btn.secondary:hover {
+            background: #229954;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        
+        .trend-up {
+            color: #27ae60;
+        }
+        
+        .trend-down {
+            color: #e74c3c;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        
+        .main-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+        
+        .panel-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .job-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .job-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #ecf0f1;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .job-item:hover {
+            border-color: #3498db;
+            box-shadow: 0 2px 10px rgba(52, 152, 219, 0.1);
+        }
+        
+        .job-info {
+            flex: 1;
+        }
+        
+        .job-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .job-details {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        .job-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-ready {
+            background: #d5f4e6;
+            color: #27ae60;
+        }
+        
+        .status-progress {
+            background: #ffeaa7;
+            color: #f39c12;
+        }
+        
+        .status-pending {
+            background: #fab1a0;
+            color: #e17055;
+        }
+        
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .ai-insights {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 12px;
+            padding: 25px;
+        }
+        
+        .insight-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .insight-item {
+            background: rgba(255,255,255,0.1);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .route-optimizer {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        .map-placeholder {
+            background: #ecf0f1;
+            height: 200px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7f8c8d;
+            margin-top: 15px;
+        }
+        
+        .route-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ecf0f1;
+        }
+        
+        .route-stat {
+            text-align: center;
+        }
+        
+        .route-stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #27ae60;
+        }
+        
+        .route-stat-label {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <i class="fas fa-brain"></i>
+            <h1>ConstructFlow AI</h1>
+        </div>
+        <div class="user-info">
+            <div class="notification-icon">
+                <i class="fas fa-bell"></i>
+                <div class="notification-badge">3</div>
+            </div>
+            <span>John Smith - Supervisor</span>
+            <i class="fas fa-user-circle" style="font-size: 24px;"></i>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="nav-item active">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-tasks"></i>
+            <span>Job Management</span>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-route"></i>
+            <span>Route Optimizer</span>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Schedule</span>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-users"></i>
+            <span>Team Coordination</span>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-chart-line"></i>
+            <span>Analytics</span>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-file-invoice-dollar"></i>
+            <span>Quotes & Estimates</span>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="dashboard-header">
+            <h2 class="dashboard-title">Daily Operations Dashboard</h2>
+            <div class="quick-actions">
+                <button class="action-btn">
+                    <i class="fas fa-plus"></i>
+                    New Job
+                </button>
+                <button class="action-btn secondary">
+                    <i class="fas fa-route"></i>
+                    Optimize Routes
+                </button>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-value">23</div>
+                        <div class="stat-label">Active Jobs Today</div>
+                        <div class="stat-trend trend-up">
+                            <i class="fas fa-arrow-up"></i>
+                            +15% from yesterday
+                        </div>
+                    </div>
+                    <div class="stat-icon" style="background: #3498db;">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-value">127km</div>
+                        <div class="stat-label">Optimized Travel Distance</div>
+                        <div class="stat-trend trend-up">
+                            <i class="fas fa-arrow-up"></i>
+                            -23% vs manual routing
+                        </div>
+                    </div>
+                    <div class="stat-icon" style="background: #27ae60;">
+                        <i class="fas fa-route"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-value">4.2h</div>
+                        <div class="stat-label">Time Saved This Week</div>
+                        <div class="stat-trend trend-up">
+                            <i class="fas fa-arrow-up"></i>
+                            +31% efficiency gain
+                        </div>
+                    </div>
+                    <div class="stat-icon" style="background: #f39c12;">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-value">$2,840</div>
+                        <div class="stat-label">Cost Savings This Month</div>
+                        <div class="stat-trend trend-up">
+                            <i class="fas fa-arrow-up"></i>
+                            ROI: 285%
+                        </div>
+                    </div>
+                    <div class="stat-icon" style="background: #e74c3c;">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="main-panel">
+                <div class="panel-header">
+                    <h3 class="panel-title">Today's Priority Jobs</h3>
+                </div>
+                <div class="job-list">
+                    <div class="job-item">
+                        <div class="job-info">
+                            <div class="job-title">Metricon - Mango Hill (Install)</div>
+                            <div class="job-details">123 Builder St, Mango Hill • Est. 2.5hrs • Materials ready</div>
+                        </div>
+                        <div class="job-status status-ready">Ready</div>
+                    </div>
+
+                    <div class="job-item">
+                        <div class="job-info">
+                            <div class="job-title">McDonald Jones - North Lakes (Pre-paint)</div>
+                            <div class="job-details">456 Construction Ave, North Lakes • Est. 1.5hrs • Pending install completion</div>
+                        </div>
+                        <div class="job-status status-progress">In Progress</div>
+                    </div>
+
+                    <div class="job-item">
+                        <div class="job-info">
+                            <div class="job-title">G.J. Gardner - Caboolture (Defects)</div>
+                            <div class="job-details">789 Build Rd, Caboolture • Est. 1hr • Scheduled for 2:30 PM</div>
+                        </div>
+                        <div class="job-status status-pending">Scheduled</div>
+                    </div>
+
+                    <div class="job-item">
+                        <div class="job-info">
+                            <div class="job-title">Burbank - Redcliffe (Post-paint)</div>
+                            <div class="job-details">321 Trade St, Redcliffe • Est. 2hrs • Materials on truck</div>
+                        </div>
+                        <div class="job-status status-ready">Ready</div>
+                    </div>
+
+                    <div class="job-item">
+                        <div class="job-info">
+                            <div class="job-title">Coral Homes - Morayfield (Install)</div>
+                            <div class="job-details">654 Industry Blvd, Morayfield • Est. 3hrs • High priority</div>
+                        </div>
+                        <div class="job-status status-ready">Ready</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="side-panel">
+                <div class="ai-insights">
+                    <div class="insight-title">
+                        <i class="fas fa-brain"></i>
+                        AI Insights & Recommendations
+                    </div>
+                    <div class="insight-item">
+                        <strong>Route Optimization:</strong> Current sequence saves 47 minutes vs. manual planning
+                    </div>
+                    <div class="insight-item">
+                        <strong>Workload Alert:</strong> Tomorrow has 31 jobs scheduled - consider redistributing 3 jobs
+                    </div>
+                    <div class="insight-item">
+                        <strong>Weather Impact:</strong> Rain forecast 2-4 PM may delay outdoor post-paint work
+                    </div>
+                    <div class="insight-item">
+                        <strong>Efficiency Tip:</strong> Grouping North Lakes jobs saves 23km of travel
+                    </div>
+                </div>
+
+                <div class="route-optimizer">
+                    <h3 class="panel-title">Today's Optimized Route</h3>
+                    <div class="map-placeholder">
+                        <i class="fas fa-map-marked-alt" style="font-size: 48px; margin-right: 15px;"></i>
+                        <div>
+                            <strong>Interactive Route Map</strong><br>
+                            Real-time GPS tracking & traffic optimization
+                        </div>
+                    </div>
+                    <div class="route-stats">
+                        <div class="route-stat">
+                            <div class="route-stat-value">127km</div>
+                            <div class="route-stat-label">Total Distance</div>
+                        </div>
+                        <div class="route-stat">
+                            <div class="route-stat-value">6.2h</div>
+                            <div class="route-stat-label">Total Time</div>
+                        </div>
+                        <div class="route-stat">
+                            <div class="route-stat-value">47min</div>
+                            <div class="route-stat-label">Time Saved</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
