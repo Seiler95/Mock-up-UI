@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConstructFlow AI - Mobile Supervisor App</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            max-width: 400px;
+            margin: 0 auto;
+            min-height: 100vh;
+            border-left: 1px solid #ddd;
+            border-right: 1px solid #ddd;
+        }
+        
+        .mobile-header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 20px 20px 15px 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .app-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .supervisor-name {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .quick-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            padding: 20px;
+            background: white;
+            margin: 0;
+        }
+        
+        .quick-stat {
+            text-align: center;
+            padding: 15px 10px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+        }
+        
+        .section-header {
+            padding: 20px 20px 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .view-all {
+            color: #3498db;
+            font-size: 14px;
+            text-decoration: none;
+        }
+        
+        .job-list {
+            padding: 0 20px 20px 20px;
+        }
+        
+        .job-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border-left: 4px solid #27ae60;
+            position: relative;
+        }
+        
+        .job-card.in-progress {
+            border-left-color: #f39c12;
+        }
+        
+        .job-card.pending {
+            border-left-color: #e74c3c;
+        }
+        
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .job-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .job-builder {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+        }
+        
+        .job-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-ready {
+            background: #d5f4e6;
+            color: #27ae60;
+        }
+        
+        .status-progress {
+            background: #ffeaa7;
+            color: #f39c12;
+        }
+        
+        .status-pending {
+            background: #fab1a0;
+            color: #e17055;
+        }
+        
+        .job-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        .detail-item i {
+            width: 14px;
+            color: #3498db;
+        }
+        
+        .job-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ecf0f1;
+        }
+        
+        .action-btn {
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #7f8c8d;
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            border-top: 1px solid #ecf0f1;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            padding: 15px 0;
+        }
+        
+        .nav-item {
+            text-align: center;
+            color: #7f8c8d;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-item.active {
+            color: #3498db;
+        }
+        
+        .nav-item i {
+            font-size: 18px;
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        .nav-item span {
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+        
+        .floating-action {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: #27ae60;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            box-shadow: 0 4px 20px rgba(39, 174, 96, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .floating-action:hover {
+            transform: scale(1.1);
+        }
+        
+        .location-banner {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 20px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .gps-pulse {
+            width: 12px;
+            height: 12px;
+            background: #2ecc71;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .next-job-banner {
+            background: #2ecc71;
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .navigate-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-header">
+        <div class="status-bar">
+            <span>9:41 AM</span>
+            <span>ConstructFlow AI</span>
+            <span>🔋 87%</span>
+        </div>
+        <div class="app-title">Field Operations</div>
+        <div class="supervisor-name">John Smith - Supervisor</div>
+    </div>
+
+    <div class="location-banner">
+        <div class="gps-pulse"></div>
+        <span>GPS Active - Currently at: Mango Hill</span>
+    </div>
+
+    <div class="next-job-banner">
+        <span>🚗 Next: McDonald Jones - North Lakes (12 min drive)</span>
+        <button class="navigate-btn">Navigate</button>
+    </div>
+
+    <div class="quick-stats">
+        <div class="quick-stat">
+            <div class="stat-number">5</div>
+            <div class="stat-label">Jobs Today</div>
+        </div>
+        <div class="quick-stat">
+            <div class="stat-number">2</div>
+            <div class="stat-label">Completed</div>
+        </div>
+        <div class="quick-stat">
+            <div class="stat-number">47m</div>
+            <div class="stat-label">Time Saved</div>
+        </div>
+    </div>
+
+    <div class="section-header">
+        <div class="section-title">Today's Jobs</div>
+        <a href="#" class="view-all">View All</a>
+    </div>
+
+    <div class="job-list">
+        <div class="job-card">
+            <div class="job-header">
+                <div>
+                    <div class="job-title">Mango Hill Install</div>
+                    <div class="job-builder">Metricon Homes</div>
+                </div>
+                <div class="job-status status-ready">Ready</div>
+            </div>
+            <div class="job-details">
+                <div class="detail-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>123 Builder St</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Est. 2.5 hrs</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-box"></i>
+                    <span>Materials Ready</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-phone"></i>
+                    <span>Site Contact</span>
+                </div>
+            </div>
+            <div class="job-actions">
+                <button class="action-btn btn-primary">
+                    <i class="fas fa-play"></i>
+                    Start
+                </button>
+                <button class="action-btn btn-secondary">
+                    <i class="fas fa-camera"></i>
+                    Photos
+                </button>
+                <button class="action-btn btn-secondary">
+                    <i class="fas fa-map"></i>
+                    Navigate
+                </button>
+            </div>
+        </div>
+
+        <div class="job-card in-progress">
+            <div class="job-header">
+                <div>
+                    <div class="job-title">North Lakes Pre-paint</div>
+                    <div class="job-builder">McDonald Jones</div>
+                </div>
+                <div class="job-status status-progress">In Progress</div>
+            </div>
+            <div class="job-details">
+                <div class="detail-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>456 Construction Ave</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Started 10:30 AM</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-tools"></i>
+                    <span>Install Complete</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Minor Issue</span>
+                </div>
+            </div>
+            <div class="job-actions">
+                <button class="action-btn btn-success">
+                    <i class="fas fa-check"></i>
+                    Complete
+                </button>
+                <button class="action-btn btn-secondary">
+                    <i class="fas fa-camera"></i>
+                    Photos
+                </button>
+                <button class="action-btn btn-secondary">
+                    <i class="fas fa-comment"></i>
+                    Notes
+                </button>
+            </div>
+        </div>
+
+        <div class="job-card pending">
+            <div class="job-header">
+                <div>
+                    <div class="job-title">Caboolture Defects</div>
+                    <div class="job-builder">G.J. Gardner</div>
+                </div>
+                <div class="job-status status-pending">Scheduled</div>
+            </div>
+            <div class="job-details">
+                <div class="detail-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>789 Build Rd</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-clock"></i>
+                    <span>2:30 PM</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-wrench"></i>
+                    <span>Defect Fix</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-car"></i>
+                    <span>23 min drive</span>
+                </div>
+            </div>
+            <div class="job-actions">
+                <button class="action-btn btn-secondary">
+                    <i class="fas fa-eye"></i>
+                    View
+                </button>
+                <button class="action-btn btn-secondary">
+                    <i class="fas fa-phone"></i>
+                    Call
+                </button>
+                <button class="action-btn btn-secondary">
+                    <i class="fas fa-map"></i>
+                    Navigate
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="floating-action">
+        <i class="fas fa-plus"></i>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="#" class="nav-item active">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-tasks"></i>
+            <span>Jobs</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-route"></i>
+            <span>Routes</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </div>
+
+    <div style="height: 80px;"></div>
+</body>
+</html>
